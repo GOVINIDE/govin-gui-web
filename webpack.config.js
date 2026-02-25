@@ -40,9 +40,7 @@ const base = {
     module: {
         rules: [{
             test: /\.jsx?$/,
-            exclude: [
-                path.resolve(__dirname, './node_modules/brython/brython.js')
-            ],
+            exclude: [],
             loader: 'babel-loader',
             include: [
                 path.resolve(__dirname, 'src'),
@@ -197,21 +195,6 @@ module.exports = [
             new CopyWebpackPlugin([{
                 from: 'extension-worker.{js,js.map}',
                 context: 'node_modules/govin-vm/dist/web'
-            }]),
-            new CopyWebpackPlugin([{
-                from: 'src/lib/brython.js',
-                to: 'static',
-                transform(content, path) {
-                    return content.toString('utf-8').replace(/\/\*# sourceMappingURL=.* \*\/$/, '');
-                  },
-            }]),
-
-            new CopyWebpackPlugin([{
-                from: 'src/lib/brython_stdlib.js',
-                to: 'static',
-                transform(content, path) {
-                    return content.toString('utf-8').replace(/\/\*# sourceMappingURL=.* \*\/$/, '');
-                  },
             }])
         ])
     })

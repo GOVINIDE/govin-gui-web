@@ -9,6 +9,41 @@ import {
     Transport
 } from 'esptool-js/lib/index.js';
 
+const INITIAL_CONNECT_BAUDRATE = 115200;
+const FLASH_BAUDRATE = 460800;
+
+/**
+ * Best-effort bootloader pulse for ESP boards over Web Serial control lines.
+ * Many ESP32 boards (CP210x/CH340/FTDI bridges) need this on Windows before sync.
+ */
+const pulseBootloaderLines = async (port, log) => {
+    if (!port || typeof port.setSignals !== 'function') return;
+    let openedHere = false;
+    try {
+        if (!port.readable && !port.writable) {
+            await port.open({baudRate: INITIAL_CONNECT_BAUDRATE});
+            openedHere = true;
+        }
+        log('Applying ESP bootloader reset sequence...');
+        // Sequence inspired by esptool auto-reset behavior (active-low wiring is common).
+        await port.setSignals({dataTerminalReady: false, requestToSend: true});
+        await new Promise(r => setTimeout(r, 120));
+        await port.setSignals({dataTerminalReady: true, requestToSend: false});
+        await new Promise(r => setTimeout(r, 120));
+        await port.setSignals({dataTerminalReady: false, requestToSend: false});
+        await new Promise(r => setTimeout(r, 160));
+    } catch (err) {
+        log(`Bootloader pulse skipped: ${err.message || err}`);
+    } finally {
+        if (openedHere) {
+            try {
+                await port.close();
+                await new Promise(r => setTimeout(r, 250));
+            } catch (_) {}
+        }
+    }
+};
+
 /**
  * Upload firmware to ESP device using esptool-js
  * @param {SerialPort} port - The serial port (Web Serial) - will be closed and a new one requested
@@ -116,26 +151,49 @@ export async function uploadFirmwareToDevice(
         
         // Use the same port (now closed) - esptool-js will open it
         device = port;
-        
-        // Create Transport wrapper for the port
-        transport = new Transport(device, false); // tracing = false
 
-        // Create ESPLoader with options
-        // esploader.main() will internally call transport.connect() and transport.readLoop()
-        const loaderOptions = {
-            transport: transport,
-            baudrate: 460800, // Initial baudrate, esptool-js will adjust as needed
-            terminal: espLoaderTerminal,
-            debugLogging: false
-        };
-        
-        esploader = new ESPLoader(loaderOptions);
-        
+        // On Windows especially, pre-pulsing reset lines improves first sync reliability.
+        await pulseBootloaderLines(device, log);
+
         log('Initializing ESP device...');
-        
-        // Connect and detect chip
-        // esploader.main() internally calls transport.connect() and transport.readLoop()
-        const chipName = await esploader.main();
+
+        // Connect and detect chip with retries.
+        let chipName = null;
+        let lastConnectErr = null;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                if (attempt > 1) {
+                    log(`Retrying ESP sync (${attempt}/3)...`);
+                    await new Promise(r => setTimeout(r, 300));
+                    await pulseBootloaderLines(device, log);
+                }
+                // Recreate transport/loader each attempt for clean state.
+                transport = new Transport(device, false); // tracing = false
+                const loaderOptions = {
+                    transport: transport,
+                    baudrate: INITIAL_CONNECT_BAUDRATE,
+                    terminal: espLoaderTerminal,
+                    debugLogging: false
+                };
+                esploader = new ESPLoader(loaderOptions);
+                chipName = await esploader.main();
+                break;
+            } catch (err) {
+                lastConnectErr = err;
+                try {
+                    if (esploader) await esploader.after();
+                } catch (_) {}
+                esploader = null;
+                try {
+                    if (transport) await transport.disconnect();
+                } catch (_) {}
+                transport = null;
+            }
+        }
+
+        if (!chipName) {
+            throw lastConnectErr || new Error('Failed to connect with the device');
+        }
         log(`Connected to ${chipName}`);
         
         // For ESP32, default offset should be 0x1000 if not specified
@@ -172,6 +230,12 @@ export async function uploadFirmwareToDevice(
         };
         
         log('Flashing firmware...');
+        try {
+            // Increase baud after successful sync for faster flashing.
+            await esploader.changeBaud(FLASH_BAUDRATE);
+        } catch (_) {
+            // Keep default baud if change is not supported.
+        }
         
         // Flash the firmware
         await esploader.writeFlash(flashOptions);

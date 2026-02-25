@@ -347,9 +347,19 @@ export default class WebSerialLinkAdapter {
 
         sendNotification('setUploadAbortEnabled', true);
         this._abortController = new AbortController();
-        
-        // Don't stop the read loop - use the same simple approach as save button
-        // This is more reliable on Windows and doesn't require port close/reopen
+
+        // Pause background read loop so uploader can read raw REPL ACK bytes.
+        if (this._readLoopReader) {
+            try {
+                await this._readLoopReader.cancel();
+            } catch (_) {}
+            this._readLoopReader = null;
+        }
+        if (this._readLoopAbortController) {
+            this._readLoopAbortController.abort();
+            this._readLoopAbortController = null;
+        }
+        await new Promise(r => setTimeout(r, 150));
 
         const encoding = (params && params.encoding) || 'utf8';
         const rawMessage = params && params.message;
@@ -363,18 +373,20 @@ export default class WebSerialLinkAdapter {
 
         const filename = 'main.py';
 
-        const result = await uploadCodeToDevice(
-            this._port,
-            code,
-            filename,
-            onStdout,
-            this._abortController.signal
-        );
-
-        this._abortController = null;
-        sendNotification('setUploadAbortEnabled', false);
-        
-        // Read loop continues running (wasn't stopped), so no need to restart it
+        let result;
+        try {
+            result = await uploadCodeToDevice(
+                this._port,
+                code,
+                filename,
+                onStdout,
+                this._abortController.signal
+            );
+        } finally {
+            this._abortController = null;
+            sendNotification('setUploadAbortEnabled', false);
+            this._startReadLoop(sendNotification);
+        }
 
         if (result === 'Aborted') {
             sendNotification('uploadSuccess', {aborted: true});

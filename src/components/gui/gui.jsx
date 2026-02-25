@@ -15,8 +15,6 @@ import Renderer from 'scratch-render';
 import HardwareTest from '../../containers/hardware-test.jsx';
 // GOVIN 2.2.3: Removed HardwareHeaderTest - buttons now in editor header
 // import HardwareHeaderTest from '../../containers/hardware-header-test.jsx';
-// added for python
-import App from '../../containers/python-console.jsx';
 import Blocks from '../../containers/blocks.jsx';
 import CostumeTab from '../../containers/costume-tab.jsx';
 import TargetPane from '../../containers/target-pane.jsx';
@@ -120,7 +118,6 @@ const GUIComponent = props => {
         onActivateCostumesTab,
         onActivateSoundsTab,
         onActivateArduinoTab,
-        onActivatePythonTab,
         onActivateTab,
         onClickLogo,
         onClickCheckUpdate,
@@ -143,7 +140,6 @@ const GUIComponent = props => {
         showComingSoon,
         soundsTabVisible,
         arduinoTabVisible,
-        pythonTabVisible,
         stageSizeMode,
         targetIsStage,
         telemetryModalVisible,
@@ -159,23 +155,7 @@ const GUIComponent = props => {
     if (children) {
         return <Box {...componentProps}>{children}</Box>;
     }
-//CARES 2.0.2
-    // const handleActivateArduinoTab = () => {
-    //     if (isRealtimeMode) {
-    //         alert('Real-time mode must be enabled to activate this tab.');
-    //         return;
-    //     }
-    //     onActivateArduinoTab();
-    // };
 
-    // // Wrapper function to activate Python tab with check
-    // const handleActivatePythonTab = () => {
-    //     if (isRealtimeMode) {
-    //         alert('Real-time mode must be enabled to activate this tab.');
-    //         return;
-    //     }
-    //     onActivatePythonTab();
-    // };
     const tabClassNames = {
         tabs: styles.tabs,
         tab: classNames(tabStyles.reactTabsTab, styles.tab),
@@ -466,15 +446,7 @@ const GUIComponent = props => {
                                         </>
                                     ) : null}
                                 </TabPanel>  
-                                   {/* python editor */}
-                                   <TabPanel
-                                    className={tabClassNames.tabPanel}>
-                                    {pythonTabVisible ? (
-                                        <>
-                                         <App vm={vm} />
-                                        </>
-                                    ) : null}
-                                </TabPanel>  
+                                  
                             </Tabs>
                             {/*
                                     backpackVisible ? (
@@ -488,7 +460,7 @@ const GUIComponent = props => {
                             className={classNames(styles.stageAndTargetWrapper, styles[stageSize],
                                 isRealtimeMode ? styles.showStage: styles.hideStage)}
                         >
-                            {((arduinoTabVisible === false)  && (pythonTabVisible==false)) ? ( //added by CARES to hide stage when clicked on arduino tab
+                            {((arduinoTabVisible === false)) ? ( //added by CARES to hide stage when clicked on arduino tab
                                 <StageWrapper
                                     isFullScreen={isFullScreen}
                                     isRendererSupported={isRendererSupported}
@@ -498,7 +470,7 @@ const GUIComponent = props => {
                                 />) : null
                             }
                             <Box className={styles.targetWrapper}>
-                                {((arduinoTabVisible === false) && (pythonTabVisible==false)) ? 
+                                {((arduinoTabVisible === false)) ? 
                                 ( //added by CARES to hide target pan when clicked on arduino tab
                                     <TargetPane
                                         stageSize={stageSize}
@@ -509,12 +481,12 @@ const GUIComponent = props => {
                         </Box>
 
                         {/* code for realtime button */}
-                        {((isRealtimeMode === false) && (arduinoTabVisible === false) && (pythonTabVisible==false)) ? ( //added by CARES to hide buttions above code editor when clicked on arduino tab
+                        {((isRealtimeMode === false) && (arduinoTabVisible === false)) ? ( //added by CARES to hide buttions above code editor when clicked on arduino tab
                             <HardwareHeader
                                 vm={vm}
                             />) : null
                         }
-                        {((isRealtimeMode === false) && (stageSizeMode !== STAGE_SIZE_MODES.hide) && ((arduinoTabVisible === false) && (pythonTabVisible==false))) ? ( //added by CARES to hide code editor when clicked on arduino tab
+                        {((isRealtimeMode === false) && (stageSizeMode !== STAGE_SIZE_MODES.hide) && ((arduinoTabVisible === false))) ? ( //added by CARES to hide code editor when clicked on arduino tab
                             <Hardware
                                 vm={vm}
                             />) : null
@@ -571,7 +543,6 @@ GUIComponent.propTypes = {
     onActivateCostumesTab: PropTypes.func,
     onActivateSoundsTab: PropTypes.func,
     onActivateArduinoTab: PropTypes.func,
-    onActivatePythonTab: PropTypes.func,
     onActivateTab: PropTypes.func,
     onConfirmTabSwitch: PropTypes.func,
     onCancelTabSwitch: PropTypes.func,
@@ -603,7 +574,6 @@ GUIComponent.propTypes = {
     showComingSoon: PropTypes.bool,
     soundsTabVisible: PropTypes.bool,
     arduinoTabVisible: PropTypes.bool,
-    pythonTabVisible: PropTypes.bool,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
     targetIsStage: PropTypes.bool,
     telemetryModalVisible: PropTypes.bool,

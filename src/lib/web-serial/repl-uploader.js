@@ -1,10 +1,10 @@
 /**
  * MicroPython REPL-based file upload over Web Serial.
  * Matches the protocol used by Arduino lab-micropython-editor (micropython.js):
- * raw REPL only (no paste mode); send Python source in chunks then Ctrl+D; wait for \x04>.
- * Writes file via: f=open(...,'wb'); w=f.write; w(bytes([...])) per 48 bytes; f.close().
+ * raw REPL only (no paste mode); send Python source then Ctrl+D; wait for \x04>.
+ * Writes file with save-style command: with open('/main.py','w') as f: f.write(...)
  *
- * govin 2.3.2: Purpose: Write main.py to device over raw REPL (exec_raw + w(bytes([...])));
+ * govin 2.3.2: Purpose: Write main.py to device over raw REPL (save-style flow).
  * browser-only, no g-link/ampy.
  */
 
@@ -14,7 +14,6 @@ const EXECUTE = 0x04;         // Ctrl+D
 const INTERRUPT = 0x03;       // Ctrl+C
 
 const WRITE_CHUNK_SIZE = 128;  // bytes of Python source per write (micropython.js)
-const FILE_CHUNK_SIZE = 48;    // bytes of file content per w(bytes([...])) (micropython.js)
 const CHUNK_DELAY_MS = 15;
 const PROMPT_TIMEOUT_MS = 15000;  // Increased for Windows compatibility
 
@@ -23,6 +22,27 @@ const PROMPT_TIMEOUT_MS = 15000;  // Increased for Windows compatibility
  */
 function fixLineBreak (str) {
     return str.replace(/\r\n/g, '\n');
+}
+
+/**
+ * Best-effort hardware reset pulse (EN-like) via Web Serial control signals.
+ * On many ESP32 USB-UART bridges this removes the need to press EN manually
+ * before talking to raw REPL.
+ */
+async function pulseResetLines (serialPort, onStdout) {
+    if (!serialPort || typeof serialPort.setSignals !== 'function') return;
+    try {
+        if (onStdout) onStdout('Pulsing reset lines...\n');
+        // Keep BOOT not asserted; pulse reset.
+        await serialPort.setSignals({dataTerminalReady: false, requestToSend: false});
+        await new Promise(r => setTimeout(r, 80));
+        await serialPort.setSignals({dataTerminalReady: true, requestToSend: false});
+        await new Promise(r => setTimeout(r, 220));
+        await serialPort.setSignals({dataTerminalReady: false, requestToSend: false});
+        await new Promise(r => setTimeout(r, 180));
+    } catch (_) {
+        // Ignore; some drivers/boards may not expose or honor line control.
+    }
 }
 
 /**
@@ -38,12 +58,14 @@ async function readUntil (reader, ending, abortSignal) {
         if (done) break;
         if (value) {
             buffer += decoder.decode(value, { stream: true });
-            if (buffer.includes(ending)) return buffer;
+        if (buffer.includes(ending)) return buffer;
         }
         // Small delay to allow more data to arrive (helps with Windows buffering)
         await new Promise(r => setTimeout(r, 10));
     }
-    return buffer;
+    const err = new Error(`Timeout waiting for device prompt: ${JSON.stringify(ending)}. Last output: ${buffer.slice(-300)}`);
+    err.partialOutput = buffer;
+    throw err;
 }
 
 /**
@@ -69,8 +91,9 @@ async function execRaw (writer, reader, pyCode, abortSignal) {
 }
 
 /**
- * Upload code to the device as a file using the same simple approach as save button.
- * This method doesn't stop the read loop, making it more reliable on Windows.
+ * Upload code to the device as a file using a save-like write flow.
+ * Expects exclusive access to serial reader/writer while uploading so each
+ * raw REPL command can wait for an explicit ACK prompt.
  *
  * @param {SerialPort} serialPort - Web Serial port (already open)
  * @param {string} code - Python code to write (UTF-8)
@@ -81,83 +104,75 @@ async function execRaw (writer, reader, pyCode, abortSignal) {
  */
 export async function uploadCodeToDevice (serialPort, code, filename, onStdout, abortSignal) {
     let writer;
+    let reader;
     const send = async (bytes) => {
         if (abortSignal && abortSignal.aborted) throw new Error('Aborted');
-        if (!writer) {
-            writer = serialPort.writable.getWriter();
-        }
         await writer.write(bytes instanceof Uint8Array ? bytes : new Uint8Array([bytes]));
     };
 
     try {
+        writer = serialPort.writable.getWriter();
+        reader = serialPort.readable.getReader();
+
         if (onStdout) onStdout('Preparing device...\n');
+        await pulseResetLines(serialPort, onStdout);
 
-        // Use the same simple approach as save button - direct writes without stopping read loop
-        // This is more reliable on Windows
-        
-        // Step 1: Interrupt any running code (Ctrl+C)
-        await send(INTERRUPT);
-        await new Promise(r => setTimeout(r, 200));
-        await send(INTERRUPT);
-        await new Promise(r => setTimeout(r, 150));
-
-        // Step 2: Enter raw REPL (Ctrl+A)
-        await send(RAW_REPL_ENTER);
-        await new Promise(r => setTimeout(r, 200));
-
-        if (abortSignal && abortSignal.aborted) return 'Aborted';
-
-        if (onStdout) onStdout('Writing file...\n');
-
-        // Step 3: Write the file using binary mode (like the original upload, but simpler)
-        const contentBuffer = new TextEncoder().encode(fixLineBreak(code));
-        const safeFilename = filename.replace(/'/g, "\\'");
-        
-        // Open file and prepare write function
-        const openCmd = `f=open('${safeFilename}','wb')\nw=f.write\n`;
-        await send(new TextEncoder().encode(openCmd));
-        await send(EXECUTE); // Ctrl+D to execute
-        await new Promise(r => setTimeout(r, 200));
-
-        // Write file content in chunks (48 bytes at a time, like original)
-        const totalChunks = Math.ceil(contentBuffer.length / FILE_CHUNK_SIZE);
-        for (let i = 0; i < contentBuffer.length; i += FILE_CHUNK_SIZE) {
-            if (abortSignal && abortSignal.aborted) return 'Aborted';
-            
-            const chunkNum = Math.floor(i / FILE_CHUNK_SIZE) + 1;
-            if (onStdout && totalChunks > 1) {
-                onStdout(`Writing chunk ${chunkNum}/${totalChunks}...\n`);
+        // Step 1: Interrupt any running code and enter raw REPL (with retries).
+        let enteredRawRepl = false;
+        let enterError = null;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                await send(INTERRUPT);
+                await new Promise(r => setTimeout(r, 200));
+                await send(INTERRUPT);
+                await new Promise(r => setTimeout(r, 150));
+                await send(INTERRUPT);
+                await new Promise(r => setTimeout(r, 150));
+                // Exit normal/raw mode if currently in an unexpected state.
+                await send(RAW_REPL_EXIT);
+                await new Promise(r => setTimeout(r, 120));
+                await send(RAW_REPL_ENTER);
+                await readUntil(reader, '>', abortSignal);
+                enteredRawRepl = true;
+                break;
+            } catch (err) {
+                enterError = err;
+                if (onStdout) onStdout(`Raw REPL sync attempt ${attempt}/3 failed, retrying...\n`);
+                await new Promise(r => setTimeout(r, 250));
             }
-
-            const slice = contentBuffer.subarray(i, Math.min(i + FILE_CHUNK_SIZE, contentBuffer.length));
-            const arr = Array.from(slice).join(',');
-            const writeCmd = `w(bytes([${arr}]))\n`;
-            await send(new TextEncoder().encode(writeCmd));
-            await send(EXECUTE); // Ctrl+D to execute
-            await new Promise(r => setTimeout(r, 50)); // Small delay between chunks
+        }
+        if (!enteredRawRepl) {
+            throw enterError || new Error('Failed to enter raw REPL');
         }
 
-        // Close file and cleanup
-        const closeCmd = 'f.close()\ndel f\ndel w\n';
-        await send(new TextEncoder().encode(closeCmd));
-        await send(EXECUTE); // Ctrl+D to execute
-        await new Promise(r => setTimeout(r, 200));
+        if (abortSignal && abortSignal.aborted) return 'Aborted';
+
+        if (onStdout) onStdout('Writing main.py...\n');
+
+        // Step 2: Use the same save-style logic as "Save to Device".
+        const safeFilename = filename.replace(/'/g, "\\'");
+        const normalizedCode = fixLineBreak(code);
+        const escapedContent = normalizedCode
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'")
+            .replace(/\n/g, '\\n')
+            .replace(/\r/g, '\\r')
+            .replace(/\t/g, '\\t');
+        const saveCmd = `with open('/${safeFilename}', 'w') as f:\n    f.write('${escapedContent}')\nprint('<<<SAVE_SUCCESS>>>')\n`;
+        const saveOut = await execRaw(writer, reader, saveCmd, abortSignal);
+        if (!saveOut.includes('<<<SAVE_SUCCESS>>>')) {
+            throw new Error(`Device did not confirm save. Last output: ${saveOut.slice(-300)}`);
+        }
 
         if (abortSignal && abortSignal.aborted) return 'Aborted';
 
-        // Step 4: Exit raw REPL (Ctrl+B)
-        await send(RAW_REPL_EXIT);
-        await new Promise(r => setTimeout(r, 200));
+        // Step 3: Exit raw REPL. Reboot is user-controlled, same as Save workflow.
+        try {
+            await send(RAW_REPL_EXIT);
+            await new Promise(r => setTimeout(r, 120));
+        } catch (_) {}
 
-        if (onStdout) onStdout('Resetting device to run main.py...\n');
-        
-        // Step 5: Soft reset to run main.py (Ctrl+D twice)
-        await send(EXECUTE);
-        await new Promise(r => setTimeout(r, 200));
-        await send(EXECUTE);
-        await new Promise(r => setTimeout(r, 500));
-
-        if (onStdout) onStdout('Success\n');
+        if (onStdout) onStdout('Saved main.py successfully. Press Reboot in console to run new code.\n');
         return 'Success';
     } catch (err) {
         if (err.message === 'Aborted') {
@@ -166,6 +181,9 @@ export async function uploadCodeToDevice (serialPort, code, filename, onStdout, 
         if (onStdout) onStdout(`Error: ${err.message}\n`);
         return err;
     } finally {
+        try {
+            if (reader) reader.releaseLock();
+        } catch (_) {}
         try {
             if (writer) writer.releaseLock();
         } catch (_) {}

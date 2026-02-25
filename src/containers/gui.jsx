@@ -16,8 +16,8 @@ import {
     BLOCKS_TAB_INDEX,
     COSTUMES_TAB_INDEX,
     SOUNDS_TAB_INDEX,
-    ARDUINO_TAB_INDEX,
-    PYTHON_TAB_INDEX
+    ARDUINO_TAB_INDEX
+  
 } from '../reducers/editor-tab';
 
 import {
@@ -157,7 +157,7 @@ const mapStateToProps = state => {
         projectId: state.scratchGui.projectState.projectId,
         soundsTabVisible: state.scratchGui.editorTab.activeTabIndex === SOUNDS_TAB_INDEX,
         arduinoTabVisible: state.scratchGui.editorTab.activeTabIndex === ARDUINO_TAB_INDEX,
-        pythonTabVisible: state.scratchGui.editorTab.activeTabIndex === PYTHON_TAB_INDEX,
+       
 
         targetIsStage: (
             state.scratchGui.targets.stage &&
@@ -195,7 +195,6 @@ const mapDispatchToProps = dispatch => ({
     onActivateCostumesTab: () => dispatch(activateTab(COSTUMES_TAB_INDEX)),
     onActivateSoundsTab: () => dispatch(activateTab(SOUNDS_TAB_INDEX)),
     onActivateArduinoTab: () => dispatch(activateTab(ARDUINO_TAB_INDEX)),
-    onActivatePythonTab: () => dispatch(activateTab(PYTHON_TAB_INDEX)),
     onRequestCloseBackdropLibrary: () => dispatch(closeBackdropLibrary()),
     onRequestCloseCostumeLibrary: () => dispatch(closeCostumeLibrary()),
     onRequestCloseTelemetryModal: () => dispatch(closeTelemetryModal())

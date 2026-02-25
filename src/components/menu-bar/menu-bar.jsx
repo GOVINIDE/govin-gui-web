@@ -116,7 +116,7 @@ import { showAlertWithTimeout } from '../../reducers/alerts';
 // Govin 2.2.3 Screenshot: Added html2canvas for capturing HTML code editor elements
 import html2canvas from 'html2canvas';
 // Govin 2.2.3 Screenshot: Added tab constants to detect active tab for screenshot
-import { BLOCKS_TAB_INDEX, ARDUINO_TAB_INDEX, PYTHON_TAB_INDEX } from '../../reducers/editor-tab';
+import { BLOCKS_TAB_INDEX, ARDUINO_TAB_INDEX} from '../../reducers/editor-tab';
 
 import UploadFirmwareModal from '../upload-firmware-modal/upload-firmware-modal.jsx'; //CARES 2.1.5 Added to create a modal for Firmware uploading confirmation
 
@@ -449,7 +449,7 @@ class MenuBar extends React.Component {
             });
         }
         // Govin 2.2.3 Screenshot: Handle Arduino tab (Text programming) - capture code editor
-        else if (activeTabIndex === ARDUINO_TAB_INDEX || activeTabIndex === PYTHON_TAB_INDEX) {
+        else if (activeTabIndex === ARDUINO_TAB_INDEX) {
             // Find the code editor container - try multiple selectors for reliability
             let codeEditorContainer = document.querySelector('.hardware-wrapper .code-editor-wrapper');
             if (!codeEditorContainer) {
@@ -1081,10 +1081,10 @@ class MenuBar extends React.Component {
             
     
                     {/* Govin 2.3.1: Classroom broadcast controls - Master/Join Class/Broadcast buttons */}
-                    <div className={classNames(styles.menuBarItem)}>
+                    {/* <div className={classNames(styles.menuBarItem)}>
                         <BroadcastControls vm={this.props.vm} />
                     </div>
-                    <Divider className={classNames(styles.divider)} />
+                    <Divider className={classNames(styles.divider)} /> */}
 
                     <div className={classNames(styles.menuBarItem, styles.programModeGroup)}>
                         <Switch

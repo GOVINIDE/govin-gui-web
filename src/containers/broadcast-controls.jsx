@@ -11,7 +11,7 @@ import {
     BroadcastMode
 } from '../reducers/broadcast';
 import broadcastService from '../lib/broadcast-service';
-import {ARDUINO_TAB_INDEX, PYTHON_TAB_INDEX} from '../reducers/editor-tab';
+import {ARDUINO_TAB_INDEX} from '../reducers/editor-tab';
 import {MASTER_PASSWORD} from '../lib/broadcast-config'; // Govin 2.3.1: Import master password
 
 class BroadcastControls extends React.Component {
@@ -71,7 +71,7 @@ class BroadcastControls extends React.Component {
         const {activeTabIndex, codeEditorValue} = this.props;
         
         // Check if on text programming tab (Arduino or Python)
-        if (activeTabIndex === ARDUINO_TAB_INDEX || activeTabIndex === PYTHON_TAB_INDEX) {
+        if (activeTabIndex === ARDUINO_TAB_INDEX) {
             // Broadcast text code (same way as file saving)
             const textContent = codeEditorValue || '';
             console.log('Govin 2.3.1: Broadcasting text code, length:', textContent.length, 'preview:', textContent.substring(0, 50));
