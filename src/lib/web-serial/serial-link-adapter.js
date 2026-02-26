@@ -409,6 +409,7 @@ export default class WebSerialLinkAdapter {
         // Get firmware file from params or prompt user
         let firmwareData = null;
         let offset = 0x1000; // Default to 0x1000 for ESP32 app partition
+        let eraseAll = true; // Default: clear flash so old filesystem files are removed
 
         if (params && params.firmwareData) {
             // Firmware data provided directly (base64 or ArrayBuffer)
@@ -425,6 +426,7 @@ export default class WebSerialLinkAdapter {
                 firmwareData = params.firmwareData;
             }
             offset = params.offset !== undefined ? params.offset : 0x1000;
+            eraseAll = params.eraseAll !== undefined ? Boolean(params.eraseAll) : true;
         } else if (params && params.firmwareUrl) {
             // Firmware URL provided - fetch it
             try {
@@ -435,6 +437,7 @@ export default class WebSerialLinkAdapter {
                 }
                 firmwareData = new Uint8Array(await response.arrayBuffer());
                 offset = params.offset !== undefined ? params.offset : 0x1000;
+                eraseAll = params.eraseAll !== undefined ? Boolean(params.eraseAll) : true;
             } catch (err) {
                 sendError(`Failed to download firmware: ${err.message}`);
                 sendResult(null);
@@ -469,6 +472,7 @@ export default class WebSerialLinkAdapter {
                 input.click();
                 firmwareData = await fileSelected;
                 offset = params && params.offset !== undefined ? params.offset : 0x1000;
+                eraseAll = params && params.eraseAll !== undefined ? Boolean(params.eraseAll) : true;
             } catch (err) {
                 if (err.message === 'File selection cancelled') {
                     sendNotification('uploadSuccess', {aborted: true});
@@ -534,7 +538,8 @@ export default class WebSerialLinkAdapter {
                 onProgress,
                 onLog,
                 onError,
-                this._abortController.signal
+                this._abortController.signal,
+                eraseAll
             );
 
             this._abortController = null;

@@ -891,7 +891,7 @@ class MenuBar extends React.Component {
                     {/* CARES uncomment to hide upload firmware in realtime mode */}
                     {(
                         <div
-                            // className={classNames(styles.menuBarItem, styles.hoverable)}
+                            // className={classNames(styles.menuBarItem, styles.disabled)}
                             // onClick={this.handleDownloadFirmware}   commented to make upload firmware button active only when peripheral is connected CARES 2.1.7
                             className={classNames(styles.menuBarItem, this.props.peripheralName ? styles.hoverable : styles.disabled)}
                             onClick={this.props.peripheralName ? this.handleDownloadFirmware : null}
@@ -917,7 +917,7 @@ class MenuBar extends React.Component {
                                     effect="solid"
                                 >
                                     <FormattedMessage
-                                        defaultMessage="Upload Firmware"
+                                        defaultMessage="Coming Soon"
                                         description="Text for menubar Upload Firmware tooltip"
                                         id="gui.menuBar.uplodFirmwareTip"
                                     />

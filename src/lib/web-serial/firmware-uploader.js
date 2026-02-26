@@ -10,7 +10,7 @@ import {
 } from 'esptool-js/lib/index.js';
 
 const INITIAL_CONNECT_BAUDRATE = 115200;
-const FLASH_BAUDRATE = 460800;
+const FLASH_BAUDRATE_CANDIDATES = [921600, 460800, 230400];
 
 /**
  * Best-effort bootloader pulse for ESP boards over Web Serial control lines.
@@ -19,19 +19,24 @@ const FLASH_BAUDRATE = 460800;
 const pulseBootloaderLines = async (port, log) => {
     if (!port || typeof port.setSignals !== 'function') return;
     let openedHere = false;
+    let tempTransport = null;
     try {
         if (!port.readable && !port.writable) {
             await port.open({baudRate: INITIAL_CONNECT_BAUDRATE});
             openedHere = true;
         }
+        // Use esptool-js Transport methods so Windows usbser RTS/DTR workaround is applied.
+        tempTransport = new Transport(port, false);
         log('Applying ESP bootloader reset sequence...');
-        // Sequence inspired by esptool auto-reset behavior (active-low wiring is common).
-        await port.setSignals({dataTerminalReady: false, requestToSend: true});
+        // Same classic reset sequence used by esptool-js.
+        await tempTransport.setDTR(false);
+        await tempTransport.setRTS(true);
+        await new Promise(r => setTimeout(r, 100));
+        await tempTransport.setDTR(true);
+        await tempTransport.setRTS(false);
         await new Promise(r => setTimeout(r, 120));
-        await port.setSignals({dataTerminalReady: true, requestToSend: false});
-        await new Promise(r => setTimeout(r, 120));
-        await port.setSignals({dataTerminalReady: false, requestToSend: false});
-        await new Promise(r => setTimeout(r, 160));
+        await tempTransport.setDTR(false);
+        await new Promise(r => setTimeout(r, 80));
     } catch (err) {
         log(`Bootloader pulse skipped: ${err.message || err}`);
     } finally {
@@ -53,6 +58,7 @@ const pulseBootloaderLines = async (port, log) => {
  * @param {Function} onLog - Log message callback
  * @param {Function} onError - Error callback
  * @param {AbortSignal} abortSignal - Abort signal to cancel upload
+ * @param {boolean} eraseAll - If true, chip erase before flashing (clears filesystem)
  * @returns {Promise<string>} 'Success' on success, error message on failure
  */
 export async function uploadFirmwareToDevice(
@@ -62,7 +68,8 @@ export async function uploadFirmwareToDevice(
     onProgress = null,
     onLog = null,
     onError = null,
-    abortSignal = null
+    abortSignal = null,
+    eraseAll = true
 ) {
     const log = onLog || (() => {});
     const error = onError || ((msg) => console.error(msg));
@@ -215,7 +222,7 @@ export async function uploadFirmwareToDevice(
             flashMode: 'keep', // Keep existing flash mode
             flashFreq: 'keep', // Keep existing flash frequency
             flashSize: 'keep', // Keep existing flash size (or use 'detect')
-            eraseAll: false, // Don't erase entire flash, just the region
+            eraseAll: Boolean(eraseAll), // Full erase clears old filesystem (main.py, etc.)
             compress: true, // Use compression for faster upload
             reportProgress: (fileIndex, written, total) => {
                 if (onProgress) {
@@ -229,13 +236,18 @@ export async function uploadFirmwareToDevice(
             }
         };
         
-        log('Flashing firmware...');
-        try {
-            // Increase baud after successful sync for faster flashing.
-            await esploader.changeBaud(FLASH_BAUDRATE);
-        } catch (_) {
-            // Keep default baud if change is not supported.
+        let activeFlashBaud = INITIAL_CONNECT_BAUDRATE;
+        for (const candidate of FLASH_BAUDRATE_CANDIDATES) {
+            try {
+                // Increase baud after successful sync for faster flashing.
+                await esploader.changeBaud(candidate);
+                activeFlashBaud = candidate;
+                break;
+            } catch (_) {
+                // Try next lower candidate.
+            }
         }
+        log(`Flashing firmware at baud ${activeFlashBaud}...`);
         
         // Flash the firmware
         await esploader.writeFlash(flashOptions);
