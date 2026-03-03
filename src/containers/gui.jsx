@@ -45,7 +45,53 @@ import GUIComponent from '../components/gui/gui.jsx';
 import {setIsScratchDesktop} from '../lib/isScratchDesktop.js';
 
 class GUI extends React.Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            minLoaderTimeElapsed: false,
+            showStartupLoader: true,
+            startupReady: false
+        };
+    }
+    static getDerivedStateFromProps (props, state) {
+        let nextPartialState = null;
+
+        if (
+            !state.startupReady &&
+            props.isShowingProject &&
+            !props.fetchingProject &&
+            !props.isLoading &&
+            !props.loadingStateVisible
+        ) {
+            nextPartialState = {
+                ...(nextPartialState || {}),
+                startupReady: true
+            };
+        }
+
+        const nextState = {
+            ...state,
+            ...(nextPartialState || {})
+        };
+
+        if (
+            nextState.showStartupLoader &&
+            nextState.startupReady &&
+            nextState.minLoaderTimeElapsed
+        ) {
+            nextPartialState = {
+                ...(nextPartialState || {}),
+                showStartupLoader: false
+            };
+        }
+
+        return nextPartialState;
+    }
     componentDidMount () {
+        this.startupLoaderTimer = setTimeout(() => {
+            this.setState({minLoaderTimeElapsed: true});
+        }, 3000);
+
         setIsScratchDesktop(this.props.isScratchDesktop);
         this.props.onStorageInit(storage);
         this.props.onVmInit(this.props.vm);
@@ -62,6 +108,9 @@ class GUI extends React.Component {
         // if (this.props.isRealtimeMode !== true) {
         //     this.props.onActivateBlocksTab();
         // }
+    }
+    componentWillUnmount () {
+        clearTimeout(this.startupLoaderTimer);
     }
     render () {
         if (this.props.isError) {
@@ -90,9 +139,11 @@ class GUI extends React.Component {
             loadingStateVisible,
             ...componentProps
         } = this.props;
+        const startupLoading = this.state.showStartupLoader;
         return (
             <GUIComponent
                 loading={fetchingProject || isLoading || loadingStateVisible}
+                startupLoading={startupLoading}
                 {...componentProps}
             >
                 {children}

@@ -130,7 +130,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
         setProjectId: PropTypes.func
     };
     ProjectFetcherComponent.defaultProps = {
-        assetHost: 'https:cares.goa.gov.in/govin-assets', //GOVINTEST 2.2.4
+        assetHost: 'https://cares.goa.gov.in/prerna/blocks/govin/govin-assets', //GOVINTEST 2.2.4
         projectHost: 'https://projects.scratch.mit.edu'
     };
 

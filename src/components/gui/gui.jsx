@@ -21,6 +21,7 @@ import TargetPane from '../../containers/target-pane.jsx';
 import SoundTab from '../../containers/sound-tab.jsx';
 import StageWrapper from '../../containers/stage-wrapper.jsx';
 import Loader from '../loader/loader.jsx';
+import StartupLoader from '../startup-loader/startup-loader.jsx';
 import Box from '../box/box.jsx';
 import MenuBar from '../menu-bar/menu-bar.jsx';
 import CostumeLibrary from '../../containers/costume-library.jsx';
@@ -106,6 +107,7 @@ const GUIComponent = props => {
         isShared,
         isTelemetryEnabled,
         loading,
+        startupLoading,
         logo,
         renderLogin,
         onClickAbout,
@@ -206,7 +208,10 @@ const GUIComponent = props => {
                     />
                 ) : null}
                 {loading ? (
-                    <Loader />
+                    startupLoading ? null : <Loader />
+                ) : null}
+                {startupLoading ? (
+                    <StartupLoader />
                 ) : null}
                 {isCreating ? (
                     <Loader messageId="gui.loader.creating" />
@@ -572,6 +577,7 @@ GUIComponent.propTypes = {
     onToggleLoginOpen: PropTypes.func,
     renderLogin: PropTypes.func,
     showComingSoon: PropTypes.bool,
+    startupLoading: PropTypes.bool,
     soundsTabVisible: PropTypes.bool,
     arduinoTabVisible: PropTypes.bool,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
@@ -600,6 +606,7 @@ GUIComponent.defaultProps = {
     isCreating: false,
     isShared: false,
     loading: false,
+    startupLoading: false,
     showComingSoon: false,
     stageSizeMode: STAGE_SIZE_MODES.large
 };

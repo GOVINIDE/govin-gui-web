@@ -118,6 +118,8 @@ import html2canvas from 'html2canvas';
 // Govin 2.2.3 Screenshot: Added tab constants to detect active tab for screenshot
 import { BLOCKS_TAB_INDEX, ARDUINO_TAB_INDEX} from '../../reducers/editor-tab';
 
+import resourceIcon from './icon--resources.svg'; // eslint-disable-line no-unused-vars
+
 import UploadFirmwareModal from '../upload-firmware-modal/upload-firmware-modal.jsx'; //CARES 2.1.5 Added to create a modal for Firmware uploading confirmation
 
 const ariaMessages = defineMessages({
@@ -227,7 +229,7 @@ class MenuBar extends React.Component {
             'handleScreenshot',
             'handleCheckUpdate',
             'handleClearCache',
-            'handleTinkercadClick',
+            'handleResourcesClick',
             'handleCloseUpdateModal',
             'handleFirmwareModalClose', //CARES 2.1.5 Firmware Confimration Modal
             'handleFirmwareModalConfirm' //CARES 2.1.5 Firmware Confimration Modal
@@ -576,8 +578,8 @@ class MenuBar extends React.Component {
             this.props.onRequestCloseAbout();
         };
     }
-    handleTinkercadClick() {
-        window.open('', '_blank');
+    handleResourcesClick() {
+        window.open('https://www.cares.goa.gov.in', '_blank');
     }
     handleFirmwareModalClose() {
         this.setState({ showFirmwareModal: false });
@@ -1120,6 +1122,35 @@ class MenuBar extends React.Component {
                             }
                         />
                     </div>
+                    {/* GOVIN WEB 2.3.2 Resources Button */}
+                      {(this.props.canManageFiles) && (
+                      
+                            <div
+                                className={classNames(styles.menuBarItem, styles.hoverable)}
+                                onClick={this.handleResourcesClick}
+                                data-tip="tooltip"
+                                data-for="resourceTip"
+                            >
+                                <img
+                                    className={styles.resourceIcon}
+                                    src={resourceIcon}
+                                />
+                                <ReactTooltip
+                                    className={styles.comingSoonTooltip}
+                                    id="resourceTip"
+                                    place="bottom"
+                                    effect="solid"
+                                >
+                                    <FormattedMessage
+                                        defaultMessage="Resources"
+                                        description="Text for menubar resources button tooltip"
+                                        id="gui.menuBar.resourceTip"
+                                    />
+                                </ReactTooltip>
+                            </div>
+
+                    
+                        )}
                     {isScratchDesktop() ? (
                         <div
                             className={classNames(styles.menuBarItem, styles.hoverable, {
