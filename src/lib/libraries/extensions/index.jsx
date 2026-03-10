@@ -291,6 +291,28 @@ export default [
     //     ),
     //     featured: true
     // },
+    //ObjectDetection
+    {
+        name: (
+            <FormattedMessage
+                defaultMessage="Object Detection"
+                description="offline Object detection"
+                id="gui.extension.objectDetection.name"
+            />
+        ),
+        extensionId: 'objectDetection',
+        collaborator: 'Your PMU-Cares',  // Change this to your name or project
+        iconURL: translateIconURL,
+        insetIconURL: translateInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Detect faces using offline models."
+                description="Description for the Face Detection extension"
+                id="gui.extension.facedetection.description"
+            />
+        ),
+        featured: true
+    },
     {
         name: 'LEGO MINDSTORMS EV3',
         extensionId: 'ev3',
