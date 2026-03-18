@@ -302,6 +302,14 @@
     text-decoration:underline;
 }
 
+/* Govin 2.3.4: Buy now as plain text when buylink empty (click does nothing) */
+.featured-extension-buy-now-text {
+    height: 100%;
+    padding-top: 0.4rem;
+    font-weight: bold;
+    cursor: default;
+}
+
 .featured-extension-program-language {
     width: 100%;
     display: flex;

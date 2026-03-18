@@ -261,7 +261,8 @@ class LibraryItemComponent extends React.PureComponent {
                         </div>
                     </div>
                 ) : null}
-                {this.props.learnMore || this.props.helpLink ? (
+                {/* Govin 2.3.4: show row when learnMore, helpLink or buylink present (buylink can be '' to show label only) */}
+                {this.props.learnMore || this.props.helpLink || this.props.buylink !== undefined ? (
                     <div className={styles.featuredExtensionMetadataThirdRow}>
                         {this.props.learnMore ? (
                             <div className={styles.featuredExtensionLearnMore}>
@@ -293,6 +294,33 @@ class LibraryItemComponent extends React.PureComponent {
                                         id="gui.extensionLibrary.extensionHelp"
                                     />
                                 </a>
+                            </div>
+                        ) : null}
+                        {/* Govin 2.3.4: Buy now – link if buylink set, else plain text (click does nothing) */}
+                        {this.props.buylink !== undefined ? (
+                            <div className={styles.featuredExtensionHelpLink}>
+                                {this.props.buylink ? (
+                                    <a
+                                        href={this.props.buylink}
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                        onClick={this.props.onClickLearnMore}
+                                    >
+                                        <FormattedMessage
+                                            defaultMessage="Buy now"
+                                            description="Link text for device buy"
+                                            id="gui.extensionLibrary.deviceBuyNow"
+                                        />
+                                    </a>
+                                ) : (
+                                    <span className={styles.featuredExtensionBuyNowText}>
+                                        <FormattedMessage
+                                            defaultMessage="Buy now"
+                                            description="Link text for device buy"
+                                            id="gui.extensionLibrary.deviceBuyNow"
+                                        />
+                                    </span>
+                                )}
                             </div>
                         ) : null}
                     </div>
@@ -396,6 +424,7 @@ LibraryItemComponent.propTypes = {
     deviceId: PropTypes.string,
     featured: PropTypes.bool,
     helpLink: PropTypes.string,
+    buylink: PropTypes.string, // Govin 2.3.4
     hidden: PropTypes.bool,
     iconSource: ScratchImage.ImageSourcePropType,
     insetIconURL: PropTypes.string,

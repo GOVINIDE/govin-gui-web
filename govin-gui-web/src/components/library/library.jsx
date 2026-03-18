@@ -282,6 +282,7 @@ class LibraryComponent extends React.Component {
                             deviceId={dataItem.deviceId}
                             featured={dataItem.featured}
                             helpLink={dataItem.helpLink}
+                            buylink={dataItem.buylink} //Govin 2.3.4
                             hidden={dataItem.hidden}
                             iconMd5={dataItem.costumes ? dataItem.costumes[0].md5ext : dataItem.md5ext}
                             iconRawURL={dataItem.rawURL}
