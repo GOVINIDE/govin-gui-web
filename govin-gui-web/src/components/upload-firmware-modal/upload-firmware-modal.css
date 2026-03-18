@@ -1,0 +1,233 @@
+/* .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+.modalContent {
+    position: relative;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    width: 31.25rem;
+    background-color: #126e9b;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    pointer-events: auto;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.body {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+.buttonRow {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.cancelButton {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--ui-black-transparent);
+    background: var(--ui-white);
+    color: var(--ui-black);
+    cursor: pointer;
+}
+
+.confirmButton {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    background: var(--motion-primary);
+    color: var(--motion-primary-contrast);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.cancelButton:hover {
+    background-color: #ce1818;
+}
+
+.confirmButton:hover {
+    background-color: #28a745;
+}
+
+.confirmButton:active {
+    background-color: #218838;
+}  */
+
+/* Govin 2.3.1: Updated Upload Firmware Modal Styles - Matches modern modal design */
+@import "../../css/units.css";
+@import "../../css/colors.css";
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+}
+
+.modalContent {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    outline: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+}
+
+.modalContent.dark-theme {
+    background: #2d2d2d;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+    padding: 2rem 2rem 1.5rem 2rem;
+    border-bottom: none;
+    font-size: 1.375rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, $motion-primary 0%, $motion-tertiary 100%);
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.modalContent.dark-theme .header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+.body {
+    padding: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.modalContent.dark-theme .body {
+    background: #2d2d2d;
+}
+
+.icon {
+    color: $motion-primary;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.modalContent.dark-theme .icon {
+    color: #ecf0f1;
+}
+
+.message {
+    color: #333333;
+    line-height: 1.6;
+    font-size: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.modalContent.dark-theme .message {
+    color: #ecf0f1;
+}
+
+.footer {
+    padding: 1.5rem 2rem 2rem 2rem;
+    border-top: none;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.modalContent.dark-theme .footer {
+    background: #2d2d2d;
+}
+
+.cancelButton {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #667eea;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.cancelButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modalContent.dark-theme .cancelButton {
+    color: #ecf0f1;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.modalContent.dark-theme .cancelButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.confirmButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.confirmButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.modalContent.dark-theme .confirmButton {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+}
+
+.modalContent.dark-theme .confirmButton:hover {
+    box-shadow: 0 8px 20px rgba(44, 62, 80, 0.4);
+} 

@@ -1,0 +1,270 @@
+/* Govin 2.3.1: Classroom broadcast controls styles */
+@import "../../css/colors.css";
+@import "../../css/units.css";
+@import "../../css/z-index.css";
+.container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 8px;
+}
+
+.statusIndicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.statusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.statusDot.connected {
+    background-color: #4caf50;
+}
+
+.statusDot.connecting {
+    background-color: #ff9800;
+}
+
+.statusDot.error {
+    background-color: #f44336;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.statusText {
+    font-size: 12px;
+    color: white;
+    font-weight: 500;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 8px;
+}
+
+.masterButton,
+.clientButton,
+.broadcastButton,
+.stopButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.icon {
+    font-size: 16px;
+}
+
+.masterButton {
+    background: linear-gradient(135deg, #4B5FD8 0%, #364FC7 100%);
+
+
+}
+
+.masterButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.clientButton {
+    background: linear-gradient(135deg, #4C6EF5 0%, #22D3EE 100%);
+
+
+}
+
+.clientButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+}
+
+.broadcastButton {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.broadcastButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+}
+
+.broadcastButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.stopButton {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.stopButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(250, 112, 154, 0.4);
+}
+
+.masterButton:active,
+.clientButton:active,
+.broadcastButton:active:not(:disabled),
+.stopButton:active {
+    transform: translateY(0);
+}
+
+/* Dialog Styles */
+.dialogOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.dialog {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    min-width: 400px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.dialogHeader {
+    padding: 20px 24px;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    background: linear-gradient(135deg, $motion-primary 0%, $motion-tertiary 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.dialogBody {
+    padding: 24px;
+}
+
+.inputLabel {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+    font-size: 14px;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #f5576c;
+}
+
+.dialogFooter {
+    display: flex;
+    gap: 12px;
+    padding: 0 24px 24px 24px;
+    justify-content: flex-end;
+}
+
+.cancelButton,
+.connectButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancelButton {
+    background-color: #e0e0e0;
+    color: #555;
+}
+
+.cancelButton:hover {
+    background-color: #d0d0d0;
+}
+
+.connectButton {
+    background: linear-gradient(135deg, $motion-primary 0%, $motion-tertiary 100%);
+    color: white;
+}
+
+.connectButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+}
+
+.cancelButton:active,
+.connectButton:active {
+    transform: translateY(0);
+}
+
+/* Govin 2.3.1: Password dialog specific styles */
+.errorMessage {
+    color: #f44336;
+    font-size: 13px;
+    margin-top: -12px;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.passwordHint {
+    font-size: 12px;
+    color: #888;
+    margin-top: -8px;
+    font-style: italic;
+}

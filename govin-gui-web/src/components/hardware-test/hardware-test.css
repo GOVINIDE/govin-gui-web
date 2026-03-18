@@ -1,0 +1,889 @@
+@import "../../css/units.css";
+@import "../../css/colors.css";
+@import "../../css/z-index.css";
+
+.hardware-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 0rem;
+    height: 100%;
+    width: 90vw;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.hardware-wrapper.dark-theme {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+
+
+
+/* .hardware-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding-left: $space;
+    padding-right: $space;
+    padding-top: $stage-menu-height;
+    height: 60%;
+} */
+.code-editor-wrapper {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-height: 0;
+    border: none;
+    box-sizing: border-box;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-direction: column;
+    background: #ffffff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.hardware-wrapper.dark-theme .code-editor-wrapper {
+    background: #2d2d2d;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Govin 2.2.0: Full height when console is hidden */
+.code-editor-wrapper.full-height {
+    height: calc(100vh - 120px); /* Full viewport minus menu/header space */
+    min-height: 500px; /* Ensure minimum usable height */
+    flex: 1 1 auto; /* Allow flex growth */
+}
+
+/* Govin 2.2.0: Ensure Monaco editor fills the container */
+.code-editor-wrapper.full-height .codeEditor {
+    height: 100% !important;
+    min-height: 400px;
+}
+
+.stage-wrapper-header {
+    display: none;
+    position: inherit;
+}
+.stage-wrapper * {
+    display: none;
+}
+
+.stage-canvas-wrapper {
+    /* Hides negative space between edge of rounded corners + container, when selected */
+    display: none;
+}
+
+.code-editor-wrapper-python {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-height: 0;
+    border: 1px solid $ui-black-transparent;
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.hardware-console-wrapper {
+    border: none;
+    box-sizing: border-box;
+    border-radius: 12px;
+    margin-top: 1rem;
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.hardware-wrapper.dark-theme .hardware-console-wrapper {
+    background: #2d2d2d;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Govin 2.2.0: Hidden console wrapper to preserve DOM and content */
+.console-hidden {
+    display: none;
+}
+
+/* GOVIN 2.2.3 - Updated editor header to use consistent blue gradient theme like menu bar */
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background:  linear-gradient(135deg, $motion-primary 0%, hsl(215, 54.15%, 34.32%) 100%);
+    border-bottom: none;
+    padding: 0.25rem 1.5rem;
+    /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif; */
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.hardware-wrapper.dark-theme .editor-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Govin 2.2.0: Console toggle controls */
+.editor-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* GOVIN 2.2.3: Styled buttons to match hardware-header-test with reduced padding */
+.console-toggle-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    height: 2rem;
+    padding: 0.25rem 0.75rem;
+    user-select: none;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: fit-content;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Upload button - green gradient like header-test */
+.console-toggle-button:nth-child(2) {
+    background: linear-gradient(135deg, #40BF4A 0%, #2E8B57 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.console-toggle-button:nth-child(2):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(64, 191, 74, 0.3);
+}
+
+/* Save, Run, Open buttons - white/transparent with purple text */
+.console-toggle-button:nth-child(3),
+.console-toggle-button:nth-child(4),
+.console-toggle-button:nth-child(5) {
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.console-toggle-button:nth-child(3):hover,
+.console-toggle-button:nth-child(4):hover,
+.console-toggle-button:nth-child(5):hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.2);
+}
+
+/* GOVIN 2.2.3: Dark theme support for buttons */
+.hardware-wrapper.dark-theme .console-toggle-button:nth-child(3),
+.hardware-wrapper.dark-theme .console-toggle-button:nth-child(4),
+.hardware-wrapper.dark-theme .console-toggle-button:nth-child(5) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ecf0f1;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hardware-wrapper.dark-theme .console-toggle-button:nth-child(3):hover,
+.hardware-wrapper.dark-theme .console-toggle-button:nth-child(4):hover,
+.hardware-wrapper.dark-theme .console-toggle-button:nth-child(5):hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Focus states */
+.console-toggle-button:focus,
+.icon-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+
+
+.editor-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    letter-spacing: 0.5px;
+}
+
+/* GOVIN: Made tabs scrollable to prevent overflow and hide + button */
+.file-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    /* Hide scrollbar but allow scrolling */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+/* WebKit scrollbar styling */
+.file-tabs::-webkit-scrollbar {
+    height: 6px;
+}
+
+.file-tabs::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.file-tabs::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.file-tabs::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.file-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    flex-shrink: 0; /* Prevent tabs from shrinking too much */
+    min-width: fit-content; /* Ensure tab content stays readable */
+}
+
+.file-tab:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.file-tab.active {
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hardware-wrapper.dark-theme .file-tab.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ecf0f1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.file-tab-name {
+    margin-right: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.file-tab-close {
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-left: 0.5rem;
+}
+
+.file-tab-close:hover {
+    opacity: 1;
+}
+
+/* GOVIN: Fixed + button position - flex-shrink prevents it from being hidden */
+.file-tabs-add {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-weight: 500;
+    flex-shrink: 0; /* Prevent + button from shrinking */
+    min-width: fit-content; /* Ensure button stays visible */
+}
+
+.file-tabs-add:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+/* GOVIN: Disabled state for + button when 4 tabs limit reached */
+.file-tabs-add:disabled,
+.file-tabs-add-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.file-tab-rename {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    width: 10rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 0.875rem;
+}
+
+.console-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-bottom: none;
+    padding: 1rem 1.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-weight: 600;
+    color: #ecf0f1;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+}
+
+/* GOVIN 2.2.3: Icon button styled to match header-test with reduced size */
+.icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    width: 2rem;
+    height: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.icon-button:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.2);
+}
+
+.icon-button svg {
+    width: 1rem;
+    height: 1rem;
+    fill: #667eea;
+}
+
+/* Dark theme for icon button */
+.hardware-wrapper.dark-theme .icon-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ecf0f1;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hardware-wrapper.dark-theme .icon-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.hardware-wrapper.dark-theme .icon-button svg {
+    fill: #ecf0f1;
+}
+
+.wide-wrapper {
+    width: calc(1800px + 2px);
+}
+
+.narrow-wrapper {
+    width: calc(1700px + 2px);
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
+/* GOVIN 2.2.3: Editor container for floating font buttons */
+.editor-container {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* GOVIN 2.2.3: Font buttons floating over editor - stacked vertically */
+.font-button,
+.font-button-plus {
+    position: absolute;
+    z-index: 10;
+    right: 24px; /* Away from scrollbar */
+    border: 1px solid rgba(76, 151, 255, 0.3);
+    background-color: rgba(76, 151, 255, 0.1);
+    color: #4C97FF;
+    height: 28px;
+    width: 28px;
+    border-radius: 0.25rem;
+    outline: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.font-button {
+    top: 8px; /* A- at top */
+}
+
+.font-button-plus {
+    top: 42px; /* A+ below (28px button + 6px gap + 8px) */
+}
+
+/* GOVIN 2.2.3: Copy/Paste/Cut buttons stacked below font buttons */
+.copy-button,
+.paste-button,
+.cut-button {
+    position: absolute;
+    z-index: 10;
+    right: 24px;
+    border: 1px solid rgba(76, 151, 255, 0.3);
+    background-color: rgba(76, 151, 255, 0.1);
+    color: #4C97FF;
+    height: 28px;
+    width: 28px;
+    border-radius: 0.25rem;
+    outline: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.copy-button {
+    top: 76px; /* Below A+ (42px + 28px + 6px) */
+}
+
+.paste-button {
+    top: 110px; /* Below Copy (76px + 28px + 6px) */
+}
+
+.cut-button {
+    top: 144px; /* Below Paste (110px + 28px + 6px) */
+}
+
+.font-button:hover,
+.font-button-plus:hover,
+.copy-button:hover,
+.paste-button:hover,
+.cut-button:hover {
+    background-color: rgba(76, 151, 255, 0.25);
+    border-color: rgba(76, 151, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* GOVIN: Upload icon sizing */
+.uploadIcon {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+/* Dark theme support for all editor buttons */
+.dark-theme .font-button,
+.dark-theme .font-button-plus,
+.dark-theme .copy-button,
+.dark-theme .paste-button,
+.dark-theme .cut-button {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+.dark-theme .font-button:hover,
+.dark-theme .font-button-plus:hover,
+.dark-theme .copy-button:hover,
+.dark-theme .paste-button:hover,
+.dark-theme .cut-button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Keep old lock-button for backward compatibility if needed */
+.lock-button {
+    position: absolute;
+    z-index: $z-index-add-button;
+    top: -1px;
+    right: -1px;
+    border: 1px solid $ui-black-transparent;
+    background-color: $ui-white;
+    height: 34px;
+    width: 34px;
+    border-radius: 0 0.5rem 0 0.5rem;
+    outline: none;
+}
+
+.lock-button:hover {
+    cursor: pointer;
+}
+
+.lock-icon{
+    height: 16px;
+    width: 16px;
+}
+
+/* GOVIN 2.2.3: Open source selection dialog and file browser modal styles */
+.file-browser-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Open source selection dialog */
+.open-source-dialog {
+    background: white;
+    border-radius: 12px;
+    width: 450px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.open-source-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.source-option-button {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: #f5f5f5;
+    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.source-option-button:hover {
+    background: #e3f2fd;
+    border-color: #4C97FF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 151, 255, 0.2);
+}
+
+/* GOVIN 2.2.3: Icon for computer option (emoji) */
+.source-icon {
+    font-size: 3rem;
+    margin-right: 1.5rem;
+}
+
+/* GOVIN 2.2.3: MicroPython logo image container */
+.source-icon-image {
+    width: 4rem;
+    height: 4rem;
+    margin-right: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.source-icon-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Dark theme for logo container */
+.dark-theme .source-icon-image {
+    background: #1e1e1e;
+}
+
+.source-text {
+    flex: 1;
+}
+
+.source-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.source-desc {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.file-browser-modal {
+    background: white;
+    border-radius: 12px;
+    width: 500px;
+    max-height: 600px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.file-browser-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #4C97FF 0%, #3373CC 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.file-browser-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+/* GOVIN 2.2.3: Header buttons container for refresh and close */
+.header-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.refresh-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+}
+
+.refresh-button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(180deg);
+}
+
+.refresh-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transition: background 0.2s;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.file-browser-body {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    min-height: 300px;
+    max-height: 400px;
+}
+
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f5f5f5;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+
+.file-item:hover {
+    background: #e3f2fd;
+    border-color: #4C97FF;
+}
+
+/* GOVIN 2.2.3: File item content (clickable area for opening) */
+.file-item-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    cursor: pointer;
+}
+
+.file-icon {
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+}
+
+.file-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #333;
+    flex: 1;
+}
+
+/* GOVIN 2.2.3: Delete button for files */
+.delete-button {
+    background: rgba(255, 69, 58, 0.1);
+    border: 1px solid rgba(255, 69, 58, 0.3);
+    color: #FF453A;
+    font-size: 1.125rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
+.delete-button:hover {
+    background: rgba(255, 69, 58, 0.2);
+    border-color: rgba(255, 69, 58, 0.5);
+    transform: scale(1.1);
+}
+
+.delete-button:active {
+    transform: scale(0.95);
+}
+
+.loading {
+    padding: 3rem;
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+}
+
+.file-browser-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.hint {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.cancel-button {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: #e0e0e0;
+    color: #333;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-button:hover {
+    background: #d0d0d0;
+    transform: translateY(-1px);
+}
+
+/* Dark theme for dialogs and file browser */
+.dark-theme .file-browser-modal,
+.dark-theme .open-source-dialog {
+    background: #2d2d2d;
+}
+
+.dark-theme .file-browser-body,
+.dark-theme .open-source-body {
+    background: #1e1e1e;
+}
+
+.dark-theme .file-item,
+.dark-theme .source-option-button {
+    background: #333;
+    color: #ecf0f1;
+}
+
+.dark-theme .file-item:hover,
+.dark-theme .source-option-button:hover {
+    background: #3a3a3a;
+}
+
+.dark-theme .file-name,
+.dark-theme .source-title {
+    color: #ecf0f1;
+}
+
+.dark-theme .source-desc {
+    color: #aaa;
+}
+
+.dark-theme .file-browser-footer {
+    background: #2d2d2d;
+    border-top-color: #444;
+}
+
+/* GOVIN 2.2.3: Dark theme support for delete button */
+.dark-theme .delete-button {
+    background: rgba(255, 69, 58, 0.15);
+    border-color: rgba(255, 69, 58, 0.4);
+    color: #FF6B6B;
+}
+
+.dark-theme .delete-button:hover {
+    background: rgba(255, 69, 58, 0.25);
+    border-color: rgba(255, 69, 58, 0.6);
+}

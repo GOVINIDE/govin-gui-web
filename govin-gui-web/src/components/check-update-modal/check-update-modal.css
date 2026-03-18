@@ -1,0 +1,295 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+@import "../../css/z-index.css";
+
+/* Govin 2.2.1 - Modern modal overlay with backdrop blur and improved styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $ui-modal-overlay;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: $z-index-modal;
+    backdrop-filter: blur(4px);
+}
+
+/* Govin 2.2.1 - Sleek modal content with rounded corners, shadows, and slide-in animation */
+.modal-content {
+    background-color: $ui-white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
+    max-width: 420px;
+    width: 90%;
+    max-height: 90vh;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid $ui-tertiary;
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.close-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: $text-primary;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.close-button:hover {
+    background-color: $ui-tertiary;
+    color: $motion-primary;
+    transform: scale(1.1);
+}
+
+.modal-body {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 200px;
+    justify-content: center;
+}
+
+/* Govin 2.2.1 - Animated gradient icon container with pulsing effects */
+.icon-container {
+    margin-bottom: 24px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: iconPulse 2s infinite;
+}
+
+.icon-container.update-available {
+    background: linear-gradient(135deg, $motion-primary 0%, $motion-tertiary 100%);
+    box-shadow: 0 8px 24px rgba(76, 151, 255, 0.3);
+}
+
+.icon-container.no-update {
+    background: linear-gradient(135deg, $extensions-primary 0%, $extensions-tertiary 100%);
+    box-shadow: 0 8px 24px rgba(15, 189, 140, 0.3);
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 8px 24px rgba(76, 151, 255, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 32px rgba(76, 151, 255, 0.4);
+    }
+}
+
+.icon {
+    font-size: 36px;
+    color: $ui-white;
+    font-weight: bold;
+}
+
+.message-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 12px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.3;
+}
+
+.message-subtitle {
+    font-size: 16px;
+    color: $text-primary-transparent;
+    margin-bottom: 32px;
+    line-height: 1.5;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.button-container {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Govin 2.2.1 - Modern gradient button with hover effects and shimmer animation */
+.download-button {
+    background: linear-gradient(135deg, $motion-primary 0%, $motion-tertiary 100%);
+    color: $ui-white;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    box-shadow: 0 4px 12px rgba(76, 151, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.download-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.download-button:hover::before {
+    left: 100%;
+}
+
+.download-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(76, 151, 255, 0.4);
+}
+
+.download-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(76, 151, 255, 0.3);
+}
+
+.close-only-button {
+    background: $ui-white;
+    color: $text-primary;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border: 2px solid $ui-tertiary;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.close-only-button:hover {
+    background: $ui-tertiary;
+    border-color: $motion-primary;
+    color: $motion-primary;
+    transform: translateY(-1px);
+}
+
+.version-badge {
+    background: $ui-secondary;
+    color: $motion-primary;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    border: 1px solid $motion-light-transparent;
+}
+
+.feature-list {
+    text-align: left;
+    margin: 16px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: $text-primary;
+}
+
+.feature-item::before {
+    content: "✓";
+    color: $extensions-primary;
+    font-weight: bold;
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .modal-body {
+        padding: 24px 20px;
+    }
+    
+    .message-title {
+        font-size: 20px;
+    }
+    
+    .button-container {
+        flex-direction: column;
+    }
+    
+    .download-button,
+    .close-only-button {
+        width: 100%;
+    }
+}
+
+/* Dark mode support (future-proofing) */
+@media (prefers-color-scheme: dark) {
+    .modal-content {
+        background-color: #1a1a1a;
+        border-color: #333;
+    }
+    
+    .message-title {
+        color: #fff;
+    }
+    
+    .message-subtitle {
+        color: #ccc;
+    }
+    
+    .close-button {
+        color: #ccc;
+    }
+    
+    .close-button:hover {
+        background-color: #333;
+        color: #fff;
+    }
+}
+
