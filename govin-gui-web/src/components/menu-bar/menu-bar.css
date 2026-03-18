@@ -1,0 +1,579 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+@import "../../css/z-index.css";
+
+.menu-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+
+    /*
+        For most things, we shouldn't explicitly set height, and let the
+        content push the element to whatever fits. Using a fixed height
+        instead, will help us subtract the value we assign from the body,
+        adding up to a perfect 100%. This means we don't need to set
+        overflow: hidden, which makes it hard to debug. border-box
+        simplifies by all of this by removing padding from the equation.
+    */
+    box-sizing: border-box;
+    height: $menu-bar-height;
+
+    /*
+        @todo: This adds ~20px in Chrome, when scrolling to the right,
+        but fixes [FFx + Safari] [resize window down + scroll to the right] bug.
+        width: 100%;
+    */
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: $menu-bar-standard-font-size;
+    font-weight: bold;
+    /* Govin 2.2.2 - Updated menu bar to use gradient theme for modern look */
+    background: $motion-primary-gradient;
+    color: $ui-white;
+}
+
+.main-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.main-menu .menu-bar-item {
+    padding: 0 0.75rem;
+}
+
+.file-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.file-menu .menu-bar-item {
+    padding: 0 0.25rem;
+}
+
+.scratch-logo {
+    height:  3.2rem;
+    vertical-align: middle;
+}
+
+.screen-shot-logo {
+    height:  1.8rem;
+    vertical-align: middle;
+}
+
+.scratch-logo.clickable {
+    cursor: pointer;
+}
+
+.download-firmware-logo {
+    height:  1.4rem;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+}
+
+.download-firmware-logo.clickable {
+    cursor: pointer;
+}
+
+.language-icon {
+    height:  1.5rem;
+    vertical-align: middle;
+}
+
+.save-icon {
+    height: 1.1rem;
+}
+
+.language-caret {
+    margin: 0 .125rem;
+}
+
+.language-menu {
+    box-sizing: border-box;
+    display: inline-flex;
+    width: $language-selector-width;
+}
+
+.menu-bar-item {
+    display: flex;
+    padding: 0 0.25rem;
+    text-decoration: none;
+    color: $ui-white;
+    user-select: none;
+    align-self: center;
+    position: relative;
+    align-items: center;
+    white-space: nowrap;
+    height: $menu-bar-height;
+}
+
+.menu-bar-item.hoverable {
+    cursor: pointer;
+}
+
+.menu-bar-item.active,
+.menu-bar-item.hoverable:hover {
+    background-color: $ui-black-transparent;
+}
+
+.menu-bar-item.growable {
+    max-width: $menu-bar-item-max-width;
+    flex: 1;
+}
+
+.title-field-growable {
+    flex-grow: 1;
+    width: 2rem;
+}
+
+.menu-bar-item.language-menu {
+    padding: 0 0.5rem;
+}
+
+.classroom-modal-body {
+    padding: 1rem;
+}
+
+.classroom-modal-content {
+    width: 520px;
+    max-width: calc(100vw - 2rem);
+}
+
+/* Match tab-switch modal: dark overlay with blur, not blue */
+.classroom-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.classroom-modal-body {
+    background: $ui-white;
+    padding: 1.25rem 1.5rem;
+}
+
+/* Classroom modal layout: make BroadcastControls look good on white */
+/* Use [class*="..."] because CSS modules hash class names (e.g. broadcast-controls_container_xyz) */
+.classroom-modal-body > :global([class*="container"]) {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.classroom-modal-body :global([class*="statusIndicator"]) {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.classroom-modal-body :global([class*="statusText"]) {
+    color: #111;
+    font-weight: 600;
+}
+
+.classroom-modal-body :global([class*="buttonGroup"]) {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Web-only: translucent glass overlay with buttons visible behind */
+.classroom-web-only-wrap {
+    position: relative;
+    min-height: 120px;
+}
+
+.classroom-web-only-behind {
+    position: absolute;
+    inset: 0;
+    opacity: 0.6;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.classroom-web-only-glass {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.classroom-web-only-message {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 600;
+    color: $text-primary;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* Language row inside Edit dropdown */
+.language-in-edit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.language-select-in-edit {
+    position: static;
+    opacity: 1;
+    width: 9rem;
+    height: 1.75rem;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.95);
+    color: #111;
+    font-weight: 600;
+}
+
+.menu-bar-menu {
+    margin-top: $menu-bar-height;
+    z-index: $z-index-menu-bar;
+}
+
+/* Language row inside Edit dropdown */
+.language-in-edit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.language-select-in-edit {
+    position: static;
+    opacity: 1;
+    width: 9rem;
+    height: 1.75rem;
+    border-radius: 4px;
+    border: 1px solid $ui-black-transparent;
+    background: rgba(255, 255, 255, 0.95);
+    color: #111;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.feedback-link {
+    color: $motion-primary;
+    text-decoration: none;
+}
+
+.feedback-button {
+    background-color: $ui-white;
+    height: 34px;
+}
+
+.divider {
+    margin: 0 .5rem;
+    height: 34px;
+    vertical-align: middle;
+}
+
+.author-info {
+    margin-left: .25rem;
+    margin-right: .6875rem;
+}
+
+.menu-bar-button {
+    height: $menu-bar-button-size;
+}
+
+.remix-button {
+    background-color: $pen-primary
+}
+
+.remix-button-icon {
+    height: 1.25rem;
+}
+
+.coming-soon >:not(.coming-soon-tooltip) {
+    opacity: 0.5;
+}
+
+.mystuff-icon {
+    margin: 0 .25rem;
+    height: 1rem;
+}
+
+.help-icon {
+    margin-right: 0.35rem;
+}
+
+.file-icon {
+    margin-right: 0.35rem;
+    height: 1.4rem;
+}
+
+.classroom-icon {
+    margin-right: 0.35rem;
+    height: 1.4rem;
+}
+
+.setting-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* .account-info-group {
+    margin-top: 0rem;
+} */
+.account-info-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.account-info-group .menu-bar-item {
+    padding: 0 0.75rem;
+}
+
+.mystuff-icon {
+    margin: 0 .25rem;
+    height: 1rem;
+}
+
+.help-icon {
+    margin-right: 0.35rem;
+}
+
+.account-nav-menu, .mystuff-button {
+    padding: 0 .25rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.profile-icon {
+    margin: 0 .25rem;
+    width: $menu-bar-button-size;
+    border-radius: $form-radius;
+}
+
+.dropdown-caret-icon {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+[dir="ltr"] .dropdown-caret-icon {
+    margin-left: .5rem;
+}
+
+[dir="rtl"] .dropdown-caret-icon {
+    margin-right: .5rem;
+}
+
+.disabled {
+    opacity: 0.5;
+}
+
+.mystuff > a {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 45%;
+  padding-right: 10px;
+  padding-left: 10px;
+  width: 30px;
+  overflow: hidden;
+  text-indent: 50px;
+  white-space: nowrap;
+}
+.mystuff > a:hover {
+  background-size: 50%;
+}
+
+.mystuff > a {
+  background-image: url("/images/mystuff.png");
+}
+
+.about-icon {
+    height: 1.25rem;
+    margin: 0.5rem;
+    vertical-align: middle;
+}
+
+.program-mode-group {
+    padding-right: 2rem;
+    padding-left: 2rem;
+}
+
+.program-mode-switch {
+  vertical-align: middle;
+}
+
+.program-mode-switch .mode-switch-realtime {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  vertical-align: middle;
+  padding-right: 2rem;
+  white-space: nowrap;
+}
+
+.program-mode-switch .mode-switch-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  vertical-align: middle;
+  padding-left: 2rem;
+  white-space: nowrap;
+}
+
+.success-tooltip {
+    background-color: $extensions-primary !important;
+    border: 1px solid $ui-black-transparent !important;
+    border-radius: $form-radius !important;
+    box-shadow: 0 0 .5rem $ui-black-transparent !important;
+    padding: .75rem 1rem !important;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+    z-index: $z-index-tooltip !important;
+}
+
+.success-tooltip:after {
+    content: "";
+    border-top: 1px solid $ui-black-transparent !important;
+    border-left: 0 !important;
+    border-bottom: 0 !important;
+    border-right: 1px solid $ui-black-transparent !important;
+    border-radius: $form-radius;
+    background-color: $extensions-primary !important;
+    height: 1rem !important;
+    width: 1rem !important;
+    margin-left: -.5rem !important;
+    top: -.5rem !important;
+    transform: rotate(-45deg) !important;
+}
+
+.warning-tooltip {
+    background-color: $data-primary !important;
+    border: 1px solid $ui-black-transparent !important;
+    border-radius: $form-radius !important;
+    box-shadow: 0 0 .5rem $ui-black-transparent !important;
+    padding: .75rem 1rem !important;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+    z-index: $z-index-tooltip !important;
+}
+
+.warning-tooltip:after {
+    content: "";
+    border-top: 1px solid $ui-black-transparent !important;
+    border-left: 0 !important;
+    border-bottom: 0 !important;
+    border-right: 1px solid $ui-black-transparent !important;
+    border-radius: $form-radius;
+    background-color: $data-primary !important;
+    height: 1rem !important;
+    width: 1rem !important;
+    margin-left: -.5rem !important;
+    top: -.5rem !important;
+    transform: rotate(-45deg) !important;
+}
+
+.select-device-tooltip {
+    /* Govin 2.2.2 - Updated tooltip to use gradient theme */
+    background: $motion-primary-gradient !important;
+    border: 1px solid $ui-black-transparent !important;
+    border-radius: $form-radius !important;
+    box-shadow: 0 0 .5rem $ui-black-transparent !important;
+    padding: .75rem 1rem !important;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+    z-index: $z-index-tooltip !important;
+}
+
+.select-device-tooltip:after {
+    content: "";
+    border-top: 1px solid $ui-black-transparent !important;
+    border-left: 0 !important;
+    border-bottom: 0 !important;
+    border-right: 1px solid $ui-black-transparent !important;
+    border-radius: $form-radius;
+    /* Govin 2.2.2 - Updated tooltip arrow to use gradient theme */
+    background: $motion-primary-gradient !important;
+    height: 1rem !important;
+    width: 1rem !important;
+    margin-left: -.5rem !important;
+    top: -.5rem !important;
+    transform: rotate(-45deg) !important;
+}
+.coming-soon-tooltip {
+    /* Govin 2.2.2 - Updated coming soon tooltip to use gradient theme */
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  background: $motion-primary-gradient !important;
+    border: 1px solid $ui-black-transparent !important;
+    border-radius: $form-radius !important;
+    box-shadow: 0 0 .5rem $ui-black-transparent !important;
+    padding: .75rem 1rem !important;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+    z-index: $z-index-tooltip !important;
+}
+
+.coming-soon-tooltip:after {
+    content: "";
+    border-top: 1px solid $ui-black-transparent !important;
+    border-left: 0 !important;
+    border-bottom: 0 !important;
+    border-right: 1px solid $ui-black-transparent !important;
+    border-radius: $form-radius;
+    /* Govin 2.2.2 - Updated coming soon tooltip arrow to use gradient theme */
+    background: $motion-primary-gradient !important;
+    height: 1rem !important;
+    width: 1rem !important;
+    margin-left: -.5rem !important;
+    top: -.5rem !important;
+    transform: rotate(-45deg) !important;
+}
+
+.python-icon {
+    height: 1.4rem;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+}
+
+.python-icon.clickable {
+    cursor: pointer;
+}
+
+/* =======================================
+   GOVIN 2.3.2: JupyterLab Integration
+   Python iframe styles for full-screen overlay
+   ======================================== */
+.pythonIframeContainer {
+    position: fixed;
+    top: $menu-bar-height;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    z-index: $z-index-menu-bar - 1;
+}
+
+.pythonIframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}

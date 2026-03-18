@@ -1,0 +1,15 @@
+@import "../../css/units.css";
+@import "../../css/colors.css";
+
+/* Govin 2.2.0: ensure editor grows under header */
+.codeEditor, .code-editor {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+}
+
+.code-editor * {
+    box-sizing: border-box;
+    /* background-image:url('LOGO.jpg'); */
+}
